@@ -34,6 +34,16 @@ export class TodosStore extends EntityStore<State, Todo> {
   }
 }
 
+@StoreConfig({
+  name: 'todos'
+})
+export class TodosStoreCustomName extends EntityStore<State, Todo> {
+  constructor(storeName) {
+    super(initialState, { storeName });
+  }
+}
+
+
 export type TodoCustomID = {
   todoId: ID;
   title?: string;
@@ -51,6 +61,7 @@ export class TodosStoreCustomID extends EntityStore<StateTwo, TodoCustomID> {
     super(initialState, { idKey: 'todoId' });
   }
 }
+
 
 export function createTodos(len) {
   const arr = [];

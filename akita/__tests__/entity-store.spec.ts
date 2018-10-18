@@ -1,5 +1,5 @@
 import { AkitaEntityNotExistsError, AkitaNoActiveError, AkitaUpdateIdKeyError } from '../src/internal/error';
-import { Todo, TodosStore, TodosStoreCustomID } from './setup';
+import { Todo, TodosStore, TodosStoreCustomID, TodosStoreCustomName } from './setup';
 
 let store = new TodosStore();
 
@@ -321,5 +321,19 @@ describe('Custom ID', () => {
     expect(store2._value().entities[1]).toBeDefined();
     expect(store2._value().entities[2]).toBeDefined();
     expect(store2._value().entities[2].title).toEqual('2');
+  });
+});
+
+
+let store3CustomNameFn = new TodosStoreCustomName(originalName => `${originalName}-1`);
+let store3CustomNameString = new TodosStoreCustomName('todos-2');
+
+describe('EntityStore creation with custom name', () => {
+  it('should return the construction-time store name when passed a function', () => {
+    expect(store3CustomNameFn.storeName).toEqual('todos-1');
+  });
+
+  it('should return the construction-time store name when passed a string', () => {
+    expect(store3CustomNameString.storeName).toEqual('todos-2');
   });
 });

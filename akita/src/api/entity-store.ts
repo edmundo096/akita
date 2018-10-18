@@ -10,12 +10,23 @@ import { ActiveState, Entities, EntityState, HashMap, ID, Newable } from './type
  * invoke `super` with the initial state.
  */
 export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
+
+  private readonly _idKey: string | undefined;
+
   /**
-   *
    * Initiate the store with the state
+   *
+   * @param initialState Additional initial state of the entity store. Dispatched as '@@INIT'.
+   * @param options Optional object with the following properties:
+   * - storeName: Optional string or function. Overwrites the store name given on the @StoreConfig().
+   *   When a function is passed, the parameter is the name from @StoreConfig().
+   *   Intended for dynamic store instantiation, i.e. for creating multiple store instances.
    */
-  constructor(initialState = {}, private options: { idKey?: string } = {}) {
-    super({ ...getInitialEntitiesState(), ...initialState });
+  constructor(initialState = {},
+              options: { idKey?: string, storeName?: string | ((configName: string) => string) } = {}
+  ) {
+    super({ ...getInitialEntitiesState(), ... initialState }, {storeName: options.storeName});
+    this._idKey = options.idKey;
   }
 
   get entities() {
@@ -26,7 +37,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
     /** backward compatibility */
     const newIdKey = this.config && this.config.idKey;
     if (!newIdKey) {
-      return this.options.idKey || 'id';
+      return this._idKey || 'id';
     }
     return newIdKey;
   }

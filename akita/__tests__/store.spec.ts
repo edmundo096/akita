@@ -159,7 +159,7 @@ class BookStore extends Store<BookState> {
 const bookStore1 = new BookStore(bookState1, originalName => `${originalName}-1`);
 const bookStore2 = new BookStore(bookState2, 'book-2');
 
-describe('Dynamic Store', () => {
+describe('Store creation with custom name', () => {
   it('should return the construction-time store name when passed a function', () => {
     expect(bookStore1.storeName).toEqual('book-1');
   });
