@@ -62,11 +62,20 @@ export class Store<S> {
 
   private _isPristine = true;
 
+  /** The store name given at construction time (if given) */
+  private readonly _dynamicStoreName: string | undefined;
+
   /**
-   *
    * Initial the store with the state
+   *
+   * @param initialState Initial state of the store. Dispatched as '@@INIT'.npm
+   * @param options Optional object with the following properties:
+   * - storeName: Optional string or function. Overwrites the store name given on the @StoreConfig().
+   *   When a function is passed, the parameter is the name given on the @StoreConfig().
+   *   Intended for dynamic store instantiation, e.g. for creating multiple store instances.
    */
-  constructor(initialState) {
+  constructor(initialState, options: { storeName?: string | ((configName: string) => string) } = {}) {
+    this._dynamicStoreName = typeof options.storeName === 'function' ? options.storeName(this.storeName) : options.storeName;
     __globalState.setAction({ type: '@@INIT' });
     __stores__[this.storeName] = this;
     this.setState(() => initialState);
@@ -117,10 +126,11 @@ export class Store<S> {
   }
 
   /**
-   * Get the store name
+   * Get the store name,
+   * either the optional construction-time name, otherwise the name from @StoreConfig.
    */
   get storeName() {
-    return this.config && this.config['storeName'];
+    return this._dynamicStoreName || (this.config && this.config['storeName']);
   }
 
   get isPristine() {

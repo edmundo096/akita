@@ -135,3 +135,40 @@ describe('Loading Basic Store', () => {
     expect(value).toBeFalsy();
   });
 });
+
+interface BookState {
+  source: string;
+}
+
+const bookState1: BookState = {
+  source: 'internal db'
+};
+const bookState2: BookState = {
+  source: 'external db'
+};
+
+@StoreConfig({
+  name: 'book'
+})
+class BookStore extends Store<BookState> {
+  constructor(initialState: BookState, storeName) {
+    super(initialState, { storeName });
+  }
+}
+
+const bookStore1 = new BookStore(bookState1, originalName => `${originalName}-1`);
+const bookStore2 = new BookStore(bookState2, 'book-2');
+
+describe('Dynamic Store', () => {
+  it('should return the construction-time store name when passed a function', () => {
+    expect(bookStore1.storeName).toEqual('book-1');
+  });
+
+  it('should return the construction-time store name when passed a string', () => {
+    expect(bookStore2.storeName).toEqual('book-2');
+  });
+
+  it('should have a different store state value compared with another store of the same type', () => {
+    expect(bookStore1._value()).not.toEqual(bookStore2._value());
+  });
+});
